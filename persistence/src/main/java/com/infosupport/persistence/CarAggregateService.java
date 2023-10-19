@@ -37,7 +37,7 @@ public class CarAggregateService {
         final var carAggregateEntity = repository.findByLicensePlate(licensePlate.value())
                 .orElseThrow(() -> new NotFoundException(String.format("No car found with license plate %s", licensePlate.value())));
 
-        if (carAggregateEntity.getVersion() != carVersion) {
+        if (carAggregateEntity.getVersion() + versionIncrease != carVersion) {
             throw new ConcurrencyException("Aggregate " + licensePlate + " was updated while handling events");
         }
 

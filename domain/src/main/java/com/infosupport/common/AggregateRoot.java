@@ -29,11 +29,6 @@ public abstract class AggregateRoot<I extends AggregateId> {
         log.info("Raising event of type {} for aggregate with id {}", event.getClass(), this.id);
         handle(event);
         events.add(event);
-    }
-
-    public <A extends AggregateRoot<I>> void check(List<DomainPolicy<A, I>> domainPolicies) {
-        log.info("Checking domain policies for aggregate with id {}", this.id);
-        domainPolicies.forEach(policy ->
-                policy.determineFollowUpEvents((A) this).forEach(this::raiseEvent));
+        version++;
     }
 }

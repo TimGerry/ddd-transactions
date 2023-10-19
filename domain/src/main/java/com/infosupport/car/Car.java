@@ -4,13 +4,11 @@ import com.infosupport.car.command.MarkCarForMaintenance;
 import com.infosupport.car.command.RecordCarTrip;
 import com.infosupport.car.command.RegisterCar;
 import com.infosupport.car.command.RemoveCar;
-import com.infosupport.car.event.BrokenCarUsed;
 import com.infosupport.car.event.CarMarkedForMaintenance;
 import com.infosupport.car.event.CarRegistered;
 import com.infosupport.car.event.CarRemoved;
 import com.infosupport.car.event.CarTripRecorded;
 import com.infosupport.car.rule.MarkableForMaintenanceRule;
-import com.infosupport.car.rule.TripWarningNeededRule;
 import com.infosupport.common.AggregateRoot;
 import com.infosupport.common.Command;
 import com.infosupport.common.Event;
@@ -24,7 +22,7 @@ public class Car extends AggregateRoot<LicensePlate> {
     private String brand;
     private String model;
     private double distanceKm;
-    private double distanceSinceLastMaintenance;
+    private double distanceKmSinceLastMaintenance;
     private CarState carState;
     private boolean maintenanceRequired;
 
@@ -58,20 +56,11 @@ public class Car extends AggregateRoot<LicensePlate> {
         final var carTripRecorded = new CarTripRecorded(
                 recordCarTrip.licensePlate(),
                 recordCarTrip.tripDistanceKm(),
+                distanceKmSinceLastMaintenance + recordCarTrip.tripDistanceKm(),
                 recordCarTrip.carState()
         );
 
         raiseEvent(carTripRecorded);
-
-        if (!TripWarningNeededRule.applies(this)) return;
-
-        final var brokenCarUsed = new BrokenCarUsed(
-                recordCarTrip.licensePlate(),
-                carState,
-                distanceSinceLastMaintenance
-        );
-
-        raiseEvent(brokenCarUsed);
     }
 
     private void apply(MarkCarForMaintenance markCarForMaintenance) {
@@ -108,7 +97,7 @@ public class Car extends AggregateRoot<LicensePlate> {
 
     private void handle(CarTripRecorded carTripRecorded) {
         this.distanceKm += carTripRecorded.tripDistanceKm();
-        this.distanceSinceLastMaintenance += carTripRecorded.tripDistanceKm();
+        this.distanceKmSinceLastMaintenance = carTripRecorded.distanceKmSinceLastMaintenance();
         this.carState = carTripRecorded.carState();
     }
 

@@ -4,10 +4,6 @@ import com.infosupport.car.Car;
 import com.infosupport.car.LicensePlate;
 import com.infosupport.common.Command;
 import com.infosupport.common.CreateCommand;
-import com.infosupport.common.DomainPolicy;
-import com.infosupport.common.Event;
-import com.infosupport.exception.DuplicateException;
-import com.infosupport.exception.NotFoundException;
 import com.infosupport.persistence.CarAggregateService;
 import com.infosupport.persistence.CarEventStore;
 import lombok.AllArgsConstructor;
@@ -18,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -27,7 +21,6 @@ public class CarCommandHandler {
 
     private final CarEventStore eventStore;
     private final CarAggregateService aggregateService;
-    private final List<DomainPolicy<Car, LicensePlate>> domainPolicies;
     private final ApplicationEventPublisher publisher;
 
     @EventListener
@@ -54,8 +47,6 @@ public class CarCommandHandler {
         }
 
         car.apply(carCommand);
-        car.check(domainPolicies);
-
         processEvents(car);
 
         log.info("Succesfully handled command of type {} for aggregate with id {}", carCommand.getClass(), carCommand.getAggregateId());

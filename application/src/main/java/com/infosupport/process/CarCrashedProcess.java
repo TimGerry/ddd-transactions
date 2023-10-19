@@ -21,7 +21,7 @@ public class CarCrashedProcess {
 
     public final ApplicationEventPublisher eventPublisher;
 
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void onCarCrashed(CarCrashed carCrashed) {
         final Command<LicensePlate> resultingCommand;

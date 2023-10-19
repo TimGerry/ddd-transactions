@@ -7,6 +7,7 @@ import com.infosupport.common.Event;
 public record CarTripRecorded(
         String licensePlate,
         double tripDistanceKm,
+        double distanceKmSinceLastMaintenance,
         CarState carState
 ) implements Event<LicensePlate> {
 
