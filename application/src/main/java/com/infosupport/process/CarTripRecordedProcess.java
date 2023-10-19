@@ -6,10 +6,9 @@ import com.infosupport.car.event.CarTripRecorded;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @Slf4j
@@ -30,7 +29,8 @@ public class CarTripRecordedProcess {
     * As a consequence, any data access code triggered at this point will still “participate” in the original transaction,
     * allowing to perform some cleanup (with no commit following anymore!)
     * */
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+//    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @EventListener
     @Async
     public void onCarTripRecorded(CarTripRecorded carTripRecorded) {
         if (carTripRecorded.getCarState() == CarState.BROKEN) {
