@@ -1,20 +1,19 @@
 package com.infosupport.common;
 
-import com.infosupport.car.Car;
-import com.infosupport.car.LicensePlate;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Slf4j
 public abstract class AggregateRoot<I extends AggregateId> {
 
     private final I id;
+    private int version;
 
     private final List<Event<I>> events = new ArrayList<>();
 

@@ -7,7 +7,7 @@ import com.infosupport.dto.CarDrivenDto;
 import com.infosupport.dto.CarRegisteredDto;
 import com.infosupport.mapper.CarDtoMapper;
 import com.infosupport.persistence.CarReadModelPersistence;
-import com.infosupport.readmodel.CarReadModel;
+import com.infosupport.readmodel.CarLicensePlateReadModel;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,7 +30,7 @@ public class CarController {
     private final CarReadModelPersistence readModelPersistence;
 
     @GetMapping
-    public ResponseEntity<List<CarReadModel>> getCars() {
+    public ResponseEntity<List<CarLicensePlateReadModel>> getCars() {
         return ResponseEntity.ok(readModelPersistence.getAll());
     }
 

@@ -8,6 +8,7 @@ import com.infosupport.common.DomainPolicy;
 import com.infosupport.common.Event;
 import com.infosupport.exception.DuplicateException;
 import com.infosupport.exception.NotFoundException;
+import com.infosupport.persistence.CarAggregateService;
 import com.infosupport.persistence.CarEventStore;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import java.util.List;
 public class CarCommandHandler {
 
     private final CarEventStore eventStore;
+    private final CarAggregateService aggregateService;
     private final List<DomainPolicy<Car, LicensePlate>> domainPolicies;
     private final ApplicationEventPublisher publisher;
 
@@ -42,39 +44,26 @@ public class CarCommandHandler {
     public void handle(Command<LicensePlate> carCommand) {
         log.info("Handling command of type {} for aggregate with id {}", carCommand.getClass(), carCommand.getAggregateId());
 
-        final var car = carCommand instanceof CreateCommand<LicensePlate>
-                ? createNewCar(carCommand.getAggregateId())
-                : getExistingCar(carCommand.getAggregateId());
+        final Car car;
+
+        if (carCommand instanceof CreateCommand<LicensePlate>) {
+            car = aggregateService.createCarAggregate(carCommand.getAggregateId());
+        } else {
+            car = aggregateService.getCarAggregate(carCommand.getAggregateId());
+            car.replay(eventStore.getEvents(car.getId()));
+        }
 
         car.apply(carCommand);
         car.check(domainPolicies);
 
-        processEvents(car.getEvents());
+        processEvents(car);
 
         log.info("Succesfully handled command of type {} for aggregate with id {}", carCommand.getClass(), carCommand.getAggregateId());
     }
 
-    private Car createNewCar(LicensePlate licensePlate) {
-        if (eventStore.exists(licensePlate))
-            throw new DuplicateException(String.format("Car with license plate %s already exists", licensePlate));
-
-        return new Car(licensePlate);
-    }
-
-    private Car getExistingCar(LicensePlate licensePlate) {
-        final List<Event<LicensePlate>> eventsForCar = eventStore.getEvents(licensePlate);
-
-        if (eventsForCar.isEmpty())
-            throw new NotFoundException(String.format("No car found with license plate %s", licensePlate.value()));
-
-        final var car = new Car(licensePlate);
-        car.replay(eventsForCar);
-
-        return car;
-    }
-
-    private void processEvents(List<Event<LicensePlate>> events) {
-        eventStore.addEvents(events);
-        events.forEach(publisher::publishEvent);
+    private void processEvents(Car car) {
+        aggregateService.incrementCarAggregateVersion(car.getId(), car.getVersion(), car.getEvents().size());
+        eventStore.addEvents(car.getEvents());
+        car.getEvents().forEach(publisher::publishEvent);
     }
 }

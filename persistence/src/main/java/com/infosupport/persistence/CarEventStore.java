@@ -4,12 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infosupport.car.LicensePlate;
 import com.infosupport.common.Event;
-import com.infosupport.entity.CarEventEntity;
+import com.infosupport.entity.car.CarEventEntity;
 import com.infosupport.repository.ICarEventRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -18,10 +17,6 @@ public class CarEventStore {
 
     private final ObjectMapper objectMapper;
     private final ICarEventRepository repository;
-
-    public boolean exists(LicensePlate licensePlate) {
-        return repository.existsByLicensePlateAndRemovedIsNull(licensePlate.value());
-    }
 
     public void addEvents(List<Event<LicensePlate>> events) {
         final List<CarEventEntity> carEventEntities = events.stream().map(event -> {
@@ -40,7 +35,7 @@ public class CarEventStore {
     }
 
     public List<Event<LicensePlate>> getEvents(LicensePlate licensePlate) {
-        return repository.findAllByLicensePlateAndRemovedIsNull(licensePlate.value())
+        return repository.findAllByLicensePlate(licensePlate.value())
                 .stream()
                 .map(this::toCarEvent)
                 .toList();

@@ -1,13 +1,11 @@
 package com.infosupport.repository;
 
-import com.infosupport.entity.CarEventEntity;
+import com.infosupport.entity.car.CarEventEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ICarEventRepository extends JpaRepository<CarEventEntity, String> {
+public interface ICarEventRepository extends JpaRepository<CarEventEntity, Long> {
 
-    boolean existsByLicensePlateAndRemovedIsNull(String licensePlate);
-
-    List<CarEventEntity> findAllByLicensePlateAndRemovedIsNull(String licensePlate);
+    List<CarEventEntity> findAllByLicensePlate(String licensePlate);
 }

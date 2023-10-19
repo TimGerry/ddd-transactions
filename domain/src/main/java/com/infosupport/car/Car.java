@@ -28,8 +28,8 @@ public class Car extends AggregateRoot<LicensePlate> {
     private CarState carState;
     private boolean maintenanceRequired;
 
-    public Car(LicensePlate id) {
-        super(id);
+    public Car(LicensePlate id, int version) {
+        super(id, version);
     }
 
     @Override

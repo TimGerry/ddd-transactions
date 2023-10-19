@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CarReadModel {
+public class CarLicensePlateReadModel {
     private String licensePlate;
     private String brand;
     private String model;

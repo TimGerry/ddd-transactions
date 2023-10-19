@@ -1,4 +1,4 @@
-package com.infosupport.entity;
+package com.infosupport.entity.car;
 
 
 import jakarta.persistence.Column;
@@ -13,7 +13,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
-// TODO: add version property
 @Entity
 @NoArgsConstructor
 @Getter
@@ -35,10 +34,6 @@ public class CarEventEntity {
     @CreationTimestamp
     @Column(name = "created", nullable = false, updatable = false)
     private Instant created;
-
-    @Setter
-    @Column(name = "removed")
-    private Instant removed;
 
     public CarEventEntity(String licensePlate, String eventType, String eventData) {
         this.licensePlate = licensePlate;
