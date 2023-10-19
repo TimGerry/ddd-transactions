@@ -21,7 +21,6 @@ public class CarCrashedProcess {
     public final ApplicationEventPublisher eventPublisher;
 
     @EventListener
-    @Transactional
     public void onCarCrashed(CarCrashed carCrashed) {
         final Command<LicensePlate> resultingCommand;
 

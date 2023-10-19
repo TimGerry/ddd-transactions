@@ -34,6 +34,7 @@ public class Car extends AggregateRoot<LicensePlate> {
 
     @Override
     public void apply(Command<LicensePlate> command) {
+        log.info("Applying command to aggregate with id {}", getId());
         switch (command) {
             case RegisterCar registerCar -> apply(registerCar);
             case RecordCarTrip recordCarTrip -> apply(recordCarTrip);
@@ -95,6 +96,7 @@ public class Car extends AggregateRoot<LicensePlate> {
 
     @Override
     protected void handle(Event<LicensePlate> event) {
+        log.info("Handling event of type {} for aggregate with id {}", event.getClass(), getId());
         switch (event) {
             case CarRegistered carRegistered -> handle(carRegistered);
             case CarTripRecorded carTripRecorded -> handle(carTripRecorded);

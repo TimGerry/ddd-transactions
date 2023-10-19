@@ -10,6 +10,7 @@ import com.infosupport.exception.DuplicateException;
 import com.infosupport.exception.NotFoundException;
 import com.infosupport.persistence.CarEventStore;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CarCommandHandler {
 
     private final CarEventStore eventStore;
@@ -38,6 +40,8 @@ public class CarCommandHandler {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public void handle(Command<LicensePlate> carCommand) {
+        log.info("Handling command of type {} for aggregate with id {}", carCommand.getClass(), carCommand.getAggregateId());
+
         final var car = carCommand instanceof CreateCommand<LicensePlate>
                 ? createNewCar(carCommand.getAggregateId())
                 : getExistingCar(carCommand.getAggregateId());
@@ -46,6 +50,8 @@ public class CarCommandHandler {
         car.check(domainPolicies);
 
         processEvents(car.getEvents());
+
+        log.info("Succesfully handled command of type {} for aggregate with id {}", carCommand.getClass(), carCommand.getAggregateId());
     }
 
     private Car createNewCar(LicensePlate licensePlate) {

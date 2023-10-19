@@ -24,7 +24,7 @@ public class CarMaintenanceNeededPolicy implements DomainPolicy<Car, LicensePlat
     }
 
     public List<Event<LicensePlate>> determineFollowUpEvents(Car car) {
-        final var followUpEvents= new ArrayList<Event<LicensePlate>>();
+        final var followUpEvents = new ArrayList<Event<LicensePlate>>();
 
         if (!car.isMaintenanceRequired() && car.getDistanceSinceLastMaintenance() >= distanceKmUntilMaintenanceNeeded) {
             followUpEvents.add(new CarMaintenancePrescribed(car.getId().value(), car.getDistanceSinceLastMaintenance()));
