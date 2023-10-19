@@ -11,7 +11,7 @@ import com.infosupport.car.event.CarTripRecorded;
 import com.infosupport.car.rule.MarkableForMaintenanceRule;
 import com.infosupport.common.AggregateRoot;
 import com.infosupport.common.Command;
-import com.infosupport.common.Event;
+import com.infosupport.common.DomainEvent;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +38,7 @@ public class Car extends AggregateRoot<LicensePlate> {
             case RecordCarTrip recordCarTrip -> apply(recordCarTrip);
             case MarkCarForMaintenance markCarForMaintenance -> apply(markCarForMaintenance);
             case RemoveCar removeCar -> apply(removeCar);
-            default -> log.info("No need to handle command of type {}", command.getClass());
+            default -> throw new UnsupportedOperationException("Command is not supported for Car aggregate: " + command.getClass());
         }
     }
 
@@ -46,7 +46,8 @@ public class Car extends AggregateRoot<LicensePlate> {
         final var carRegistered = new CarRegistered(
                 registerCar.licensePlate(),
                 registerCar.brand(),
-                registerCar.model()
+                registerCar.model(),
+                getVersion() + 1
         );
 
         raiseEvent(carRegistered);
@@ -57,7 +58,8 @@ public class Car extends AggregateRoot<LicensePlate> {
                 recordCarTrip.licensePlate(),
                 recordCarTrip.tripDistanceKm(),
                 distanceKmSinceLastMaintenance + recordCarTrip.tripDistanceKm(),
-                recordCarTrip.carState()
+                recordCarTrip.carState(),
+                getVersion() + 1
         );
 
         raiseEvent(carTripRecorded);
@@ -68,7 +70,8 @@ public class Car extends AggregateRoot<LicensePlate> {
 
         final var carMarkedForMaintenance = new CarMarkedForMaintenance(
                 markCarForMaintenance.licensePlate(),
-                true
+                true,
+                getVersion() + 1
         );
 
         raiseEvent(carMarkedForMaintenance);
@@ -77,41 +80,42 @@ public class Car extends AggregateRoot<LicensePlate> {
     private void apply(RemoveCar removeCar) {
         final var carRemoved = new CarRemoved(
                 removeCar.licensePlate(),
-                carState
+                removeCar.carState(),
+                getVersion() + 1
         );
 
         raiseEvent(carRemoved);
     }
 
     @Override
-    protected void handle(Event<LicensePlate> event) {
-        log.info("Handling event of type {} for aggregate with id {}", event.getClass(), getId());
-        switch (event) {
+    protected void handle(DomainEvent<LicensePlate> domainEvent) {
+        log.info("Handling event of type {} for aggregate with id {}", domainEvent.getClass(), getId());
+        switch (domainEvent) {
             case CarRegistered carRegistered -> handle(carRegistered);
             case CarTripRecorded carTripRecorded -> handle(carTripRecorded);
             case CarMarkedForMaintenance carMarkedForMaintenance -> handle(carMarkedForMaintenance);
             case CarRemoved carRemoved -> handle(carRemoved);
-            default -> log.info("No need to handle event of type {}", event.getClass());
+            default -> throw new UnsupportedOperationException("Event is not supported for Car aggregate: " + domainEvent.getClass());
         }
     }
 
     private void handle(CarTripRecorded carTripRecorded) {
-        this.distanceKm += carTripRecorded.tripDistanceKm();
-        this.distanceKmSinceLastMaintenance = carTripRecorded.distanceKmSinceLastMaintenance();
-        this.carState = carTripRecorded.carState();
+        this.distanceKm += carTripRecorded.getTripDistanceKm();
+        this.distanceKmSinceLastMaintenance = carTripRecorded.getDistanceKmSinceLastMaintenance();
+        this.carState = carTripRecorded.getCarState();
     }
 
     private void handle(CarRegistered carRegistered) {
-        this.brand = carRegistered.brand();
-        this.model = carRegistered.model();
+        this.brand = carRegistered.getBrand();
+        this.model = carRegistered.getModel();
         this.carState = CarState.NEW;
     }
 
     private void handle(CarMarkedForMaintenance carMarkedForMaintenance) {
-        this.maintenanceRequired = carMarkedForMaintenance.maintenanceRequired();
+        this.maintenanceRequired = carMarkedForMaintenance.isMaintenanceRequired();
     }
 
     private void handle(CarRemoved carRemoved) {
-        this.carState = carRemoved.carstate();
+        this.carState = carRemoved.getCarstate();
     }
 }

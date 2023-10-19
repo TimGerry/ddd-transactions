@@ -1,7 +1,7 @@
 package com.infosupport.config.kafka;
 
 import com.infosupport.common.AggregateId;
-import com.infosupport.common.Event;
+import com.infosupport.common.DomainEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +22,7 @@ public class KafkaProducerConfiguration {
     private String bootstrapAddress;
 
     @Bean
-    public <I extends AggregateId> ProducerFactory<String, Event<I>> producerFactory() {
+    public <I extends AggregateId> ProducerFactory<String, DomainEvent<I>> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
@@ -37,7 +37,7 @@ public class KafkaProducerConfiguration {
     }
 
     @Bean
-    public <I extends AggregateId> KafkaTemplate<String, Event<I>> kafkaTemplate() {
+    public <I extends AggregateId> KafkaTemplate<String, DomainEvent<I>> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }

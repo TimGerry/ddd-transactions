@@ -33,12 +33,12 @@ public class CarTripRecordedProcess {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void onCarTripRecorded(CarTripRecorded carTripRecorded) {
-        if (carTripRecorded.carState() == CarState.BROKEN) {
+        if (carTripRecorded.getCarState() == CarState.BROKEN) {
             log.warn("Trip was recorded for broken car {}", carTripRecorded.getAggregateId());
         }
 
-        if (carTripRecorded.distanceKmSinceLastMaintenance() > distanceKmUntilMaintenanceNeeded) {
-            eventPublisher.publishEvent(new MarkCarForMaintenance(carTripRecorded.licensePlate()));
+        if (carTripRecorded.getDistanceKmSinceLastMaintenance() > distanceKmUntilMaintenanceNeeded) {
+            eventPublisher.publishEvent(new MarkCarForMaintenance(carTripRecorded.getLicensePlate()));
         }
     }
 }

@@ -15,7 +15,7 @@ public class CarEventListener {
 
     @KafkaListener(topics = "crash-report", groupId = "${spring.kafka.consumer.group-id}")
     public void carCrashed(CarCrashedEventDto carCrashedEventDto) {
-        final var carDomainEvent = CarEventMapper.toDomainEvent(carCrashedEventDto);
+        final var carDomainEvent = CarEventMapper.toEvent(carCrashedEventDto);
         publisher.publishEvent(carDomainEvent);
     }
 }

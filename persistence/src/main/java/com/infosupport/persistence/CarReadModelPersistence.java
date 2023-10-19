@@ -3,8 +3,8 @@ package com.infosupport.persistence;
 import com.infosupport.car.LicensePlate;
 import com.infosupport.car.event.CarRegistered;
 import com.infosupport.car.event.CarRemoved;
-import com.infosupport.common.Event;
-import com.infosupport.entity.car.CarLicensePlateReadModelEntity;
+import com.infosupport.common.DomainEvent;
+import com.infosupport.entity.CarLicensePlateReadModelEntity;
 import com.infosupport.mapper.CarReadModelMapper;
 import com.infosupport.readmodel.CarLicensePlateReadModel;
 import com.infosupport.repository.ICarLicensePlateReadModelRepository;
@@ -28,8 +28,8 @@ public class CarReadModelPersistence {
     @Async
     @EventListener
     @Transactional
-    public void applyToReadModel(Event<LicensePlate> event) {
-        switch (event) {
+    public void applyToReadModel(DomainEvent<LicensePlate> domainEvent) {
+        switch (domainEvent) {
             case CarRegistered carRegistered -> handleCarRegistered(carRegistered);
             case CarRemoved carRemoved -> handleCarRemoved(carRemoved);
             default -> {}/*No operation*/
@@ -37,15 +37,15 @@ public class CarReadModelPersistence {
     }
 
     private void handleCarRegistered(CarRegistered carRegistered) {
-        if (repository.existsByLicensePlate(carRegistered.licensePlate())) return;
+        if (repository.existsByLicensePlate(carRegistered.getLicensePlate())) return;
 
-        final var entity = new CarLicensePlateReadModelEntity(carRegistered.licensePlate());
+        final var entity = new CarLicensePlateReadModelEntity(carRegistered.getLicensePlate());
         repository.save(entity);
     }
 
     private void handleCarRemoved(CarRemoved carRemoved) {
-        if (!repository.existsByLicensePlate(carRemoved.licensePlate())) return;
-        repository.deleteByLicensePlate(carRemoved.licensePlate());
+        if (!repository.existsByLicensePlate(carRemoved.getLicensePlate())) return;
+        repository.deleteByLicensePlate(carRemoved.getLicensePlate());
     }
 
     public List<CarLicensePlateReadModel> getAll() {

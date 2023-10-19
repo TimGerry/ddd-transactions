@@ -15,20 +15,20 @@ public abstract class AggregateRoot<I extends AggregateId> {
     private final I id;
     private int version;
 
-    private final List<Event<I>> events = new ArrayList<>();
+    private final List<DomainEvent<I>> domainEvents = new ArrayList<>();
 
     public abstract void apply(Command<I> command);
 
-    public void replay(List<Event<I>> events) {
-        events.forEach(this::handle);
+    public void replay(List<DomainEvent<I>> domainEvents) {
+        domainEvents.forEach(this::handle);
     }
 
-    protected abstract void handle(Event<I> event);
+    protected abstract void handle(DomainEvent<I> domainEvent);
 
-    protected void raiseEvent(Event<I> event) {
-        log.info("Raising event of type {} for aggregate with id {}", event.getClass(), this.id);
-        handle(event);
-        events.add(event);
-        version++;
+    protected void raiseEvent(DomainEvent<I> domainEvent) {
+        log.info("Raising event of type {} for aggregate with id {}", domainEvent.getClass(), this.id);
+        handle(domainEvent);
+        domainEvents.add(domainEvent);
+        version = domainEvent.getVersion();
     }
 }

@@ -2,16 +2,13 @@ package com.infosupport.persistence;
 
 import com.infosupport.car.Car;
 import com.infosupport.car.LicensePlate;
-import com.infosupport.common.Event;
-import com.infosupport.entity.car.CarAggregateEntity;
+import com.infosupport.entity.CarAggregateEntity;
 import com.infosupport.exception.ConcurrencyException;
 import com.infosupport.exception.DuplicateException;
 import com.infosupport.exception.NotFoundException;
 import com.infosupport.repository.ICarAggregateRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor

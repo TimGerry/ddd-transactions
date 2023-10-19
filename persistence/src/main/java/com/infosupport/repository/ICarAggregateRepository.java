@@ -1,7 +1,6 @@
 package com.infosupport.repository;
 
-import com.infosupport.entity.car.CarAggregateEntity;
-import com.infosupport.entity.car.CarLicensePlateReadModelEntity;
+import com.infosupport.entity.CarAggregateEntity;
 import org.springframework.data.repository.ListCrudRepository;
 
 import java.util.Optional;

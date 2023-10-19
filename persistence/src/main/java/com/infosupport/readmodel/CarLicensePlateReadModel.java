@@ -7,7 +7,5 @@ import lombok.Getter;
 @Builder
 public class CarLicensePlateReadModel {
     private String licensePlate;
-    private String brand;
-    private String model;
     private String registeredDateTime;
 }

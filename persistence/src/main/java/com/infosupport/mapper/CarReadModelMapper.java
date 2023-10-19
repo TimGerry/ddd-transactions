@@ -1,6 +1,6 @@
 package com.infosupport.mapper;
 
-import com.infosupport.entity.car.CarLicensePlateReadModelEntity;
+import com.infosupport.entity.CarLicensePlateReadModelEntity;
 import com.infosupport.readmodel.CarLicensePlateReadModel;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

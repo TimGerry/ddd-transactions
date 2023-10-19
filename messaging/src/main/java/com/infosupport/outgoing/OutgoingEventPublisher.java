@@ -1,7 +1,7 @@
 package com.infosupport.outgoing;
 
 import com.infosupport.common.AggregateId;
-import com.infosupport.common.Event;
+import com.infosupport.common.DomainEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class OutgoingEventPublisher {
 
-    private final KafkaTemplate<String, Event<? extends AggregateId>> kafkaTemplate;
+    private final KafkaTemplate<String, DomainEvent<? extends AggregateId>> kafkaTemplate;
 
     @EventListener
-    public void publish(Event<? extends AggregateId> event) {
-        kafkaTemplate.send("car", event);
-        log.info("Outgoing event of type {} is on its way...", event.getClass().getName());
+    public void publish(DomainEvent<? extends AggregateId> domainEvent) {
+        kafkaTemplate.send("car", domainEvent);
+        log.info("Outgoing event of type {} is on its way...", domainEvent.getClass().getName());
     }
 }

@@ -53,8 +53,8 @@ public class CarCommandHandler {
     }
 
     private void processEvents(Car car) {
-        aggregateService.incrementCarAggregateVersion(car.getId(), car.getVersion(), car.getEvents().size());
-        eventStore.addEvents(car.getEvents());
-        car.getEvents().forEach(publisher::publishEvent);
+        aggregateService.incrementCarAggregateVersion(car.getId(), car.getVersion(), car.getDomainEvents().size());
+        eventStore.addEvents(car.getDomainEvents());
+        car.getDomainEvents().forEach(publisher::publishEvent);
     }
 }
