@@ -9,6 +9,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @Slf4j
@@ -23,14 +27,9 @@ public class CarTripRecordedProcess {
         this.distanceKmUntilMaintenanceNeeded = distanceKmUntilMaintenanceNeeded;
     }
 
-    /*
-    * The transaction will have been committed already,
-    * but the transactional resources might still be active and accessible.
-    * As a consequence, any data access code triggered at this point will still “participate” in the original transaction,
-    * allowing to perform some cleanup (with no commit following anymore!)
-    * */
-//    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @EventListener
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
+//    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void onCarTripRecorded(CarTripRecorded carTripRecorded) {
         if (carTripRecorded.getCarState() == CarState.BROKEN) {

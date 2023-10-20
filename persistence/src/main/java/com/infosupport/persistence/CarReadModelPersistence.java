@@ -14,6 +14,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.List;
 
@@ -26,8 +28,8 @@ public class CarReadModelPersistence {
 
 
     @Async
-    @EventListener
-    @Transactional
+//    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void applyToReadModel(DomainEvent<LicensePlate> domainEvent) {
         switch (domainEvent) {
             case CarRegistered carRegistered -> handleCarRegistered(carRegistered);

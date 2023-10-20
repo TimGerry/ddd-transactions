@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,18 +24,10 @@ public class CarCommandHandler {
     private final CarAggregateService aggregateService;
     private final ApplicationEventPublisher publisher;
 
+    @Async
     @EventListener
-    /*
-      Transactional with propagation REQUIRED (default behaviour)
-      This allows a new transaction to be started if a command was directly sent from messaging,
-      or an existing transaction to be used if called from a process
-
-      EXPLANATION
-       - use spring transactions
-       - each aggregate state should be valid after each command, so place @Transactional on command handler
-     */
     @Transactional(propagation = Propagation.REQUIRED)
-    public void handle(Command<LicensePlate> carCommand) {
+    public void handle(Command<LicensePlate> carCommand) throws InterruptedException {
         log.info("Handling command of type {} for aggregate with id {}", carCommand.getClass(), carCommand.getAggregateId());
 
         final Car car;
@@ -48,6 +41,8 @@ public class CarCommandHandler {
 
         car.apply(carCommand);
         processEvents(car);
+
+//        Thread.sleep(3000);
 
         log.info("Succesfully handled command of type {} for aggregate with id {}", carCommand.getClass(), carCommand.getAggregateId());
     }
