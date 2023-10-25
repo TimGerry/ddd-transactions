@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class OutgoingEventPublisher {
 
-    private final KafkaTemplate<String, DomainEvent<? extends AggregateId>> kafkaTemplate;
+//    private final KafkaTemplate<String, DomainEvent<? extends AggregateId>> kafkaTemplate;
 
     @EventListener
     public void publish(DomainEvent<? extends AggregateId> domainEvent) {
-        kafkaTemplate.send("car", domainEvent);
+//        kafkaTemplate.send("car", domainEvent);
         log.info("Outgoing event of type {} is on its way...", domainEvent.getClass().getName());
     }
 }

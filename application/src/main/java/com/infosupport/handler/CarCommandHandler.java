@@ -42,7 +42,7 @@ public class CarCommandHandler {
         car.apply(carCommand);
         processEvents(car);
 
-//        Thread.sleep(3000);
+        Thread.sleep(3000);
 
         log.info("Succesfully handled command of type {} for aggregate with id {}", carCommand.getClass(), carCommand.getAggregateId());
     }
