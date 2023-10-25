@@ -1,0 +1,19 @@
+POST http://localhost:9001/api/cars/register
+Content-Type: application/json
+
+{
+    "licensePlate": "2CSG902",
+    "brand": "Toyota",
+    "model": "GR Supra"
+}
+
+###
+
+POST http://localhost:9001/api/cars/drive
+Content-Type: application/json
+
+{
+  "licensePlate": "2CSG902",
+  "tripDistanceKm": 10023.4,
+  "carState": "NEW"
+}
